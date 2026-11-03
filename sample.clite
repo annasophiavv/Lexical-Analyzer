@@ -1,1 +1,4 @@
 //this will be the sample file
+int main() {
+    return 0;
+}
