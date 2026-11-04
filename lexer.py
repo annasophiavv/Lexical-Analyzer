@@ -11,7 +11,11 @@ def check_for_comment(file_string: str, position: int):
         position += 1
     return position
 
-
+def check_for_block_comment(file_string: str, position: int):
+    end = file_string.find('*/', position + 2)
+    if end == -1:
+        raise ValueError(f"Unterminated block comment at position {position}")
+    return end + 2
 
 def store_identifier(file_string:str, position: int):
     word = file_string[position]
