@@ -14,8 +14,25 @@ def read_file():
     return source
 
 def main():
-    source = read_file()
-    start_lexical_analyzer(source)
-    print_tokens()
+    try:
+        if len(sys.argv) < 2:
+            print("Usage: python main.py <filename>")
+            return
 
-main()
+        source = read_file()
+        tokens = start_lexical_analyzer(source)
+
+        print_tokens()
+
+        build_symbol_table(tokens)
+        print_symbol_table()
+
+        print("\nLexical analysis completed successfully.")
+
+    except (OSError, ValueError) as error:
+        print(f"\nERROR: {error}")
+
+
+if __name__ == "__main__":
+    main()
+
