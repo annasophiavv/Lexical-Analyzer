@@ -1,8 +1,55 @@
-//comment for testing
+
+ // Comment for testing
+
 int main() {
-    int x = 1;
-    if (x > 0) {
-        x = x + 2;
+
+    // Variable declarations
+    int count = 10;
+    int total_count = 0;
+    float price = 3.14;
+    bool is_valid = true;
+    char grade = 65;
+
+    // Arithmetic operators
+    total_count = count + 5;
+    total_count = total_count - 2;
+    total_count = total_count * 3;
+    total_count = total_count / 2;
+
+    /* Comparison and logical operators */
+    if (count >= 5 && total_count != 0) {
+        total_count = total_count + 1;
+    } else {
+        total_count = total_count - 1;
     }
-    return x;
+
+    // While loop
+    while (count > 0 || total_count == 0) {
+        count = count - 1;
+    }
+
+    // For loop
+    for (int i = 0; i < 5; i++) {
+        total_count = total_count + i;
+    }
+
+    // Additional comparison operators
+    if (price <= 10.50) {
+        is_valid = false;
+    }
+
+    if (count == 0) {
+        total_count++;
+    }
+
+    if (total_count != 0) {
+        total_count--;
+    }
+
+    // Logical NOT operator
+    if (!is_valid) {
+        total_count = 100;
+    }
+
+    return total_count;
 }
