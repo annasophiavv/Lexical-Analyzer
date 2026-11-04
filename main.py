@@ -3,6 +3,7 @@
 import sys
 from lexer import start_lexical_analyzer
 from token_handlers import print_tokens
+from symbol_table import build_symbol_table, print_symbol_table
 
 def read_file():
     filename = sys.argv[1] #example command: python3 main.py sample.clite. filename will equal sample.clite
