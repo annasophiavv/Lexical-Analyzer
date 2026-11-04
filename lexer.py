@@ -21,7 +21,7 @@ def store_identifier(file_string:str, position: int):
     word = file_string[position]
     position += 1
 
-    while position < len(file_string) and file_string[position].isalnum():
+    while position < len(file_string) and (file_string[position].isalnum() or file_string[position] == '_'):
         word += file_string[position]
         position += 1
 
@@ -31,36 +31,37 @@ def store_identifier(file_string:str, position: int):
         tokens.append(('IDENTIFIER', word))
     return position
 
-def store_num(file_string:str, position: int):
-    number_as_string = file_string[position]
-    position += 1
+def store_num(file_string: str, position: int):
+    start = position
 
-    while position < len(file_string) and (file_string[position].isdigit() or file_string[position] == '.'):
-        #checking for decimals
-        if file_string[position] != '.' or  number_as_string.count('.') == 0:
-            number_as_string += file_string[position]
-            position += 1
-        else:
-            raise Exception("Invalid number, can only have one period")
+    while position < len(file_string) and (
+        file_string[position].isalnum() or
+        file_string[position] in '._'
+    ):
+        position += 1
 
-    tokens.append(('LITERAL', number_as_string))
+    number = file_string[start:position]
+
+    if number.count('.') > 1 or not number.replace('.', '', 1).isdigit() or number.endswith('.'):
+        raise ValueError(f"Invalid numeric literal '{number}' at position {start}")
+
+    tokens.append(('LITERAL', number))
     return position
     
 def store_operator(file_string: str, position: int):
-    operator = file_string[position]
-    position += 1
+    two_char = file_string[position:position + 2]
 
-    while position < len(file_string) and (file_string[position] in operators):
-        operator += file_string[position]
-        if len(operator) > 2:
-            raise Exception("operators can't be more than 2 characters")
-        position += 1
+    if two_char in operators:
+        tokens.append(('OPERATOR', two_char))
+        return position + 2
 
-    if operator in operators:
-        tokens.append(('OPERATOR', operator))
-    else:
-        raise Exception("This operator does not exist")
-    return position
+    one_char = file_string[position]
+
+    if one_char in operators:
+        tokens.append(('OPERATOR', one_char))
+        return position + 1
+
+    raise ValueError(f"Invalid operator at position {position}")
         
 
 def store_delimiter(file_string: str, position: int):
@@ -71,23 +72,31 @@ def store_delimiter(file_string: str, position: int):
 
 
 
+
 def start_lexical_analyzer(file_string: str):
     position = 0
+    tokens.clear()
 
     while position < len(file_string):
         character = file_string[position]
 
         if character.isspace():
             position += 1
-        elif character.isalpha():
+        elif character.isalpha() or character == '_':
             position = store_identifier(file_string, position)
         elif character.isdigit():
             position = store_num(file_string, position)
-        elif character == '/' and file_string[position:position + 2] == '//':
+        elif file_string[position:position + 2] == '//':
             position = check_for_comment(file_string, position)
+        elif file_string[position:position + 2] == '/*':
+            position = check_for_block_comment(file_string, position)
         elif character in operators:
             position = store_operator(file_string, position)
         elif character in delimiters:
             position = store_delimiter(file_string, position)
         else:
-            raise Exception(f"Unexpected character {character!r} at position {position}")
+            raise ValueError(
+                f"Unexpected character {character!r} at position {position}"
+            )
+
+    return tokens
