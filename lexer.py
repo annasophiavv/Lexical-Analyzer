@@ -70,9 +70,6 @@ def store_delimiter(file_string: str, position: int):
     tokens.append(('DELIMITER', delimiter))
     return position
 
-
-
-
 def start_lexical_analyzer(file_string: str):
     position = 0
     tokens.clear()
