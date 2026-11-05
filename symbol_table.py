@@ -1,29 +1,42 @@
 #where the symbol table lives and its operations
 
+from token_handlers import tokens
+
 symbol_table = {}
 
-def add_symbol(name, kind, data_type, line_declared, users):
-    symbol_table[name] = {
-        "Kind": kind,
-        "Type": data_type,
-        "Line Declared": line_declared,
-        "Users": users
-    }
+def build_symbol_table(tokens):
+    symbol_table.clear()
+
+    for token_type, lexeme in tokens:
+        if token_type == "IDENTIFIER":
+            if lexeme not in symbol_table:
+                symbol_table[lexeme] = {
+                    "Kind": "IDENTIFIER",
+                    "Type": None,
+                    "Line Declared": None,
+                    "Count": 1
+                }
+            else:
+                symbol_table[lexeme]["Count"] += 1
+
+    return symbol_table
 
 
-# Add symbols to the symbol table
-add_symbol("age", "IDENTIFIER", "int", 2, 2)
-add_symbol("grade", "IDENTIFIER", "float", 3, 3)
-add_symbol("total", "IDENTIFIER", "int", 4, 5)
-add_symbol("Calculate", "IDENTIFIER", "int", 14, 1)
-add_symbol("score", "IDENTIFIER", "int", 14, 2)
-add_symbol("bonus", "IDENTIFIER", "int", 15, 2)
+def print_symbol_table():
+    print("\nSYMBOL TABLE")
+    print("-" * 85)
+    print(f"{'NAME':<15} {'KIND':<15} {'TYPE':<15} {'LINE DECLARED':<20} {'COUNT'}")
+    print("-" * 85)
+
+    for name, info in symbol_table.items():
+        print(
+            f"{name:<15}"
+            f"{info['Kind']:<15}"
+            f"{info['Type'] or '':<15}"
+            f"{info['Line Declared'] or '':<20}"
+            f"{info['Count']}"
+        )
 
 
-# Display the symbol table
-print(f"{'Name':<12} {'Kind':<12} {'Type':<8} {'Line Declared':<15} {'Users':<6}")
-print("-" * 60)
-
-for name, info in symbol_table.items():
-    print(f"{name:<12} {info['Kind']:<12} {info['Type']:<8} "
-          f"{info['Line Declared']:<15} {info['Users']:<6}")
+build_symbol_table(tokens)
+print_symbol_table()
