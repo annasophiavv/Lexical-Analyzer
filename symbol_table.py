@@ -1,21 +1,49 @@
 #where the symbol table lives and its operations
 
-from token_handlers import tokens
-
 symbol_table = {}
 
-def build_symbol_table(tokens):
+
+def build_symbol_table(tokens, file_string):
     symbol_table.clear()
 
+    declarations = {}
+
+    # Find variable declarations and their line numbers.
+    for line_number, line in enumerate(
+        file_string.splitlines(), start=1
+    ):
+        # Remove comments.
+        line = re.sub(r'//.*', '', line)
+        line = re.sub(r'/\*.*?\*/', '', line)
+
+        # Identify variable declarations.
+        pattern = r'\b(int|float|char|bool)\s+([A-Za-z_]\w*)'
+
+        for match in re.finditer(pattern, line):
+            variable_type = match.group(1)
+            variable_name = match.group(2)
+
+            declarations[variable_name] = {
+                "Type": variable_type,
+                "Line Declared": line_number
+            }
+
+    # Count each identifier.
     for token_type, lexeme in tokens:
         if token_type == "IDENTIFIER":
+
             if lexeme not in symbol_table:
                 symbol_table[lexeme] = {
                     "Kind": "IDENTIFIER",
-                    "Type": None,
-                    "Line Declared": None,
+                    "Type": declarations.get(
+                        lexeme, {}
+                    ).get("Type"),
+                    "Line Declared": declarations.get(
+                        lexeme, {}
+                    ).get("Line Declared"),
                     "Count": 1
                 }
+
             else:
                 symbol_table[lexeme]["Count"] += 1
 
@@ -25,7 +53,12 @@ def build_symbol_table(tokens):
 def print_symbol_table():
     print("\nSYMBOL TABLE")
     print("-" * 85)
-    print(f"{'NAME':<15} {'KIND':<15} {'TYPE':<15} {'LINE DECLARED':<20} {'COUNT'}")
+
+    print(
+        f"{'NAME':<15} {'KIND':<15} {'TYPE':<15} "
+        f"{'LINE DECLARED':<20} {'COUNT'}"
+    )
+
     print("-" * 85)
 
     for name, info in symbol_table.items():
@@ -36,7 +69,3 @@ def print_symbol_table():
             f"{info['Line Declared'] or '':<20}"
             f"{info['Count']}"
         )
-
-
-build_symbol_table(tokens)
-print_symbol_table()
