@@ -24,7 +24,7 @@ def main():
 
         print_tokens()
 
-        build_symbol_table(tokens)
+        build_symbol_table(tokens, source)
         print_symbol_table()
 
         print("\nLexical analysis completed successfully.")

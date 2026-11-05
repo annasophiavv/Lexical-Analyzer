@@ -1,4 +1,5 @@
 #where the symbol table lives and its operations
+import re
 
 symbol_table = {}
 
